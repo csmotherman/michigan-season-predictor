@@ -160,41 +160,45 @@ async function scorePredict(interaction: ChatInputCommandInteraction) {
 }
 
 async function handleScoreSelect(interaction: ButtonInteraction) {
-  if (!interaction.guildId) return;
-  const gameId = interaction.customId.split(":")[1];
-  const game = schedule.games.find((g) => g.id === gameId);
-  
-  if (!game || isLocked(game)) {
-    return interaction.reply({ content: "This game is no longer available.", flags: 64 });
+  try {
+    if (!interaction.guildId) return;
+    const gameId = interaction.customId.split(":")[1];
+    const game = schedule.games.find((g) => g.id === gameId);
+    
+    if (!game || isLocked(game)) {
+      return interaction.reply({ content: "This game is no longer available.", flags: 64 });
+    }
+    
+    const modal = new ModalBuilder()
+      .setCustomId(`score_modal:${gameId}`)
+      .setTitle(`${schedule.team} vs ${game.opponent}`)
+      .addComponents(
+        new ActionRowBuilder<TextInputBuilder>().addComponents(
+          new TextInputBuilder()
+            .setCustomId("michigan_score")
+            .setLabel(`${schedule.team} Score`)
+            .setStyle(TextInputStyle.Short)
+            .setMinLength(1)
+            .setMaxLength(3)
+            .setPlaceholder("0-100")
+            .setRequired(true)
+        ),
+        new ActionRowBuilder<TextInputBuilder>().addComponents(
+          new TextInputBuilder()
+            .setCustomId("opponent_score")
+            .setLabel(`${game.opponent} Score`)
+            .setStyle(TextInputStyle.Short)
+            .setMinLength(1)
+            .setMaxLength(3)
+            .setPlaceholder("0-100")
+            .setRequired(true)
+        )
+      );
+    
+    await interaction.showModal(modal);
+  } catch (error) {
+    console.error("Error in handleScoreSelect:", error);
   }
-  
-  const modal = new ModalBuilder()
-    .setCustomId(`score_modal:${gameId}`)
-    .setTitle(`${schedule.team} vs ${game.opponent}`)
-    .addComponents(
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId("michigan_score")
-          .setLabel(`${schedule.team} Score`)
-          .setStyle(TextInputStyle.Short)
-          .setMinLength(1)
-          .setMaxLength(3)
-          .setPlaceholder("0-100")
-          .setRequired(true)
-      ),
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId("opponent_score")
-          .setLabel(`${game.opponent} Score`)
-          .setStyle(TextInputStyle.Short)
-          .setMinLength(1)
-          .setMaxLength(3)
-          .setPlaceholder("0-100")
-          .setRequired(true)
-      )
-    );
-  
-  await interaction.showModal(modal);
 }
 
 async function handleScoreModal(interaction: ModalSubmitInteraction) {
