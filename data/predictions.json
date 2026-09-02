@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "predictions": [
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "wmich",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "oklahoma",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "utep",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "iowa",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "penn-state",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "indiana",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "rutgers",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "michigan-state",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "oregon",
+      "pick": "L",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "ucla",
+      "pick": "W",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    },
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "ohio-state",
+      "pick": "L",
+      "updatedAt": "2026-09-02T12:05:17.589Z"
+    }
+  ]
+}
