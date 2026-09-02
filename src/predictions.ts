@@ -1,6 +1,7 @@
 import type { Game } from "./config.js";
 
 export type Pick = "W" | "L";
+export type ScorePrediction = { michScore: number; opponentScore: number };
 
 export function isLocked(game: Game, now = new Date()): boolean {
   return game.lockAt !== null && now >= new Date(game.lockAt);

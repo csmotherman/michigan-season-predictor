@@ -1,12 +1,14 @@
 import { dirname, resolve } from "node:path";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
-import type { Pick } from "./predictions.js";
+import type { Pick, ScorePrediction } from "./predictions.js";
 
 export type StoredPick = { gameId: string; pick: Pick };
+export type StoredScore = { gameId: string; prediction: ScorePrediction };
 export type CommunityRow = { gameId: string; wins: number; losses: number; total: number };
 type Row = StoredPick & { guildId: string; season: number; userId: string; updatedAt: string };
-type Data = { version: 1; predictions: Row[] };
+type ScoreRow = StoredScore & { guildId: string; season: number; userId: string; updatedAt: string };
+type Data = { version: 1; predictions: Row[]; scores: ScoreRow[] };
 
 export class PredictionStore {
   private readonly path: string;
@@ -18,9 +20,10 @@ export class PredictionStore {
     try {
       this.data = JSON.parse(readFileSync(this.path, "utf8")) as Data;
       if (this.data.version !== 1 || !Array.isArray(this.data.predictions)) throw new Error("Invalid data shape");
+      if (!Array.isArray(this.data.scores)) this.data.scores = [];
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-      this.data = { version: 1, predictions: [] };
+      this.data = { version: 1, predictions: [], scores: [] };
       this.flush();
     }
   }
@@ -76,5 +79,32 @@ export class PredictionStore {
     return new Set(this.data.predictions
       .filter((row) => row.guildId === guildId && row.season === season)
       .map((row) => row.userId)).size;
+  }
+
+  getUserScore(guildId: string, season: number, userId: string, gameId: string): ScorePrediction | null {
+    const row = this.data.scores.find((row) =>
+      row.guildId === guildId && row.season === season && row.userId === userId && row.gameId === gameId
+    );
+    return row?.prediction ?? null;
+  }
+
+  async saveUserScore(guildId: string, season: number, userId: string, gameId: string, prediction: ScorePrediction): Promise<void> {
+    const timestamp = new Date().toISOString();
+    const existing = this.data.scores.find((row) =>
+      row.guildId === guildId && row.season === season && row.userId === userId && row.gameId === gameId
+    );
+    if (existing) {
+      existing.prediction = prediction;
+      existing.updatedAt = timestamp;
+    } else {
+      this.data.scores.push({ guildId, season, userId, gameId, prediction, updatedAt: timestamp });
+    }
+    await this.flushAsync();
+  }
+
+  communityScores(guildId: string, season: number, gameId: string): ScorePrediction[] {
+    return this.data.scores
+      .filter((row) => row.guildId === guildId && row.season === season && row.gameId === gameId)
+      .map((row) => row.prediction);
   }
 }

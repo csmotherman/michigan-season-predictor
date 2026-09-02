@@ -125,6 +125,28 @@ async function community(interaction: ChatInputCommandInteraction) {
   return interaction.reply({ embeds: [embed] });
 }
 
+async function scorePredict(interaction: ChatInputCommandInteraction) {
+  if (!interaction.guildId) return interaction.reply({ content: "Use this command inside a server.", flags: 64 });
+  const michScore = interaction.options.getInteger("michigan", true);
+  const opponentScore = interaction.options.getInteger("opponent", true);
+  await store.saveUserScore(interaction.guildId, schedule.season, interaction.user.id, "wmich", { michScore, opponentScore });
+  
+  const communityScores = store.communityScores(interaction.guildId, schedule.season, "wmich");
+  const avgMich = communityScores.length ? communityScores.reduce((sum, s) => sum + s.michScore, 0) / communityScores.length : 0;
+  const avgOpp = communityScores.length ? communityScores.reduce((sum, s) => sum + s.opponentScore, 0) / communityScores.length : 0;
+  
+  const embed = new EmbedBuilder()
+    .setColor(0xffcb05)
+    .setTitle("🏈 Your Score Prediction Saved")
+    .setDescription(`**${schedule.team} ${michScore} - ${opponentScore} Western Michigan**`)
+    .addFields(
+      { name: "Community Average", value: `**${avgMich.toFixed(1)} - ${avgOpp.toFixed(1)}**`, inline: true },
+      { name: "Total Predictions", value: `**${communityScores.length}**`, inline: true }
+    )
+    .setFooter({ text: `Week 1 • ${schedule.season}` });
+  return interaction.reply({ embeds: [embed], flags: 64 });
+}
+
 client.once(Events.ClientReady, (ready) => console.log(`Ready as ${ready.user.tag}`));
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
@@ -133,6 +155,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.commandName === "predict") return await startPredict(interaction);
     if (interaction.commandName === "mypicks") return await myPicks(interaction);
     if (interaction.commandName === "community") return await community(interaction);
+    if (interaction.commandName === "score") return await scorePredict(interaction);
   } catch (error) {
     console.error(error);
     const message = { content: "Something went wrong. Please try again.", flags: 64 };
