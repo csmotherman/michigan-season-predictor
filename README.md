@@ -10,7 +10,7 @@ A Discord bot for Michigan Football Focus. Members privately choose a win or los
 
 ## Important before launch
 
-The supplied `schedule.json` contains the 11 opponents from the original request. A normal regular season has 12 games, so **verify the complete schedule before inviting users**. Add the missing game if necessary. Set each `lockAt` to an ISO 8601 kickoff timestamp with a UTC offset, for example:
+The supplied `schedule.json` contains Michigan's 12 regular-season opponents. Verify the complete schedule before inviting users. Set each `lockAt` to an ISO 8601 kickoff timestamp with a UTC offset, for example:
 
 ```json
 "lockAt": "2026-09-05T12:00:00-04:00"

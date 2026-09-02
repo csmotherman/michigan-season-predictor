@@ -13,7 +13,6 @@
     { "id": "michigan-state", "opponent": "Michigan State", "location": "home", "lockAt": null },
     { "id": "oregon", "opponent": "Oregon", "location": "away", "lockAt": null },
     { "id": "ucla", "opponent": "UCLA", "location": "home", "lockAt": null },
-    { "id": "ohio-state", "opponent": "Ohio State", "location": "away", "lockAt": null },
-    { "id": "big-ten-championship", "opponent": "Big Ten Championship Game", "location": "neutral", "lockAt": null }
+    { "id": "ohio-state", "opponent": "Ohio State", "location": "away", "lockAt": null }
   ]
 }
