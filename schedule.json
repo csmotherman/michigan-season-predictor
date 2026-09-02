@@ -2,16 +2,18 @@
   "season": 2026,
   "team": "Michigan",
   "games": [
-    { "id": "wmich", "opponent": "Western Michigan", "location": "home", "lockAt": "2026-09-05T19:00:00-04:00" },
-    { "id": "oklahoma", "opponent": "Oklahoma", "location": "away", "lockAt": null },
+    { "id": "wmich", "opponent": "Western Michigan", "location": "home", "lockAt": "2026-09-05T19:30:00-04:00" },
+    { "id": "oklahoma", "opponent": "Oklahoma", "location": "home", "lockAt": null },
     { "id": "utep", "opponent": "UTEP", "location": "home", "lockAt": null },
-    { "id": "iowa", "opponent": "Iowa", "location": "away", "lockAt": null },
+    { "id": "iowa", "opponent": "Iowa", "location": "home", "lockAt": null },
+    { "id": "minnesota", "opponent": "Minnesota", "location": "away", "lockAt": null },
     { "id": "penn-state", "opponent": "Penn State", "location": "home", "lockAt": null },
-    { "id": "indiana", "opponent": "Indiana", "location": "away", "lockAt": null },
-    { "id": "rutgers", "opponent": "Rutgers", "location": "home", "lockAt": null },
-    { "id": "michigan-state", "opponent": "Michigan State", "location": "away", "lockAt": null },
-    { "id": "oregon", "opponent": "Oregon", "location": "home", "lockAt": null },
+    { "id": "indiana", "opponent": "Indiana", "location": "home", "lockAt": null },
+    { "id": "rutgers", "opponent": "Rutgers", "location": "away", "lockAt": null },
+    { "id": "michigan-state", "opponent": "Michigan State", "location": "home", "lockAt": null },
+    { "id": "oregon", "opponent": "Oregon", "location": "away", "lockAt": null },
     { "id": "ucla", "opponent": "UCLA", "location": "home", "lockAt": null },
-    { "id": "ohio-state", "opponent": "Ohio State", "location": "away", "lockAt": null }
+    { "id": "ohio-state", "opponent": "Ohio State", "location": "away", "lockAt": null },
+    { "id": "big-ten-championship", "opponent": "Big Ten Championship Game", "location": "neutral", "lockAt": null }
   ]
 }
