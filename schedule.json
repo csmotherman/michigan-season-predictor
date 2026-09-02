@@ -2,7 +2,7 @@
   "season": 2026,
   "team": "Michigan",
   "games": [
-    { "id": "wmich", "opponent": "Western Michigan", "location": "home", "lockAt": null },
+    { "id": "wmich", "opponent": "Western Michigan", "location": "home", "lockAt": "2026-09-05T19:00:00-04:00" },
     { "id": "oklahoma", "opponent": "Oklahoma", "location": "away", "lockAt": null },
     { "id": "utep", "opponent": "UTEP", "location": "home", "lockAt": null },
     { "id": "iowa", "opponent": "Iowa", "location": "away", "lockAt": null },
