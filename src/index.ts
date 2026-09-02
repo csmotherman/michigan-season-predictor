@@ -7,7 +7,11 @@ import {
   Client,
   EmbedBuilder,
   Events,
-  GatewayIntentBits
+  GatewayIntentBits,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ModalSubmitInteraction
 } from "discord.js";
 import { env, schedule } from "./config.js";
 import { PredictionStore } from "./database.js";
@@ -127,30 +131,115 @@ async function community(interaction: ChatInputCommandInteraction) {
 
 async function scorePredict(interaction: ChatInputCommandInteraction) {
   if (!interaction.guildId) return interaction.reply({ content: "Use this command inside a server.", flags: 64 });
-  const michScore = interaction.options.getInteger("michigan", true);
-  const opponentScore = interaction.options.getInteger("opponent", true);
-  await store.saveUserScore(interaction.guildId, schedule.season, interaction.user.id, "wmich", { michScore, opponentScore });
+  const games = editableGames();
+  if (!games.length) return interaction.reply({ content: "All games are locked.", flags: 64 });
   
-  const communityScores = store.communityScores(interaction.guildId, schedule.season, "wmich");
+  const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+  let currentRow = new ActionRowBuilder<ButtonBuilder>();
+  
+  for (let i = 0; i < games.length; i++) {
+    if (i > 0 && i % 5 === 0) {
+      rows.push(currentRow);
+      currentRow = new ActionRowBuilder<ButtonBuilder>();
+    }
+    const game = games[i]!;
+    currentRow.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`score:${game.id}`)
+        .setLabel(`vs ${game.opponent}`)
+        .setStyle(ButtonStyle.Primary)
+    );
+  }
+  rows.push(currentRow);
+  
+  await interaction.reply({
+    content: "Select a game to predict the score:",
+    components: rows,
+    flags: 64
+  });
+}
+
+async function handleScoreSelect(interaction: ButtonInteraction) {
+  if (!interaction.guildId) return;
+  const gameId = interaction.customId.split(":")[1];
+  const game = schedule.games.find((g) => g.id === gameId);
+  
+  if (!game || isLocked(game)) {
+    return interaction.reply({ content: "This game is no longer available.", flags: 64 });
+  }
+  
+  const modal = new ModalBuilder()
+    .setCustomId(`score_modal:${gameId}`)
+    .setTitle(`${schedule.team} vs ${game.opponent}`)
+    .addComponents(
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId("michigan_score")
+          .setLabel(`${schedule.team} Score`)
+          .setStyle(TextInputStyle.Short)
+          .setMinLength(1)
+          .setMaxLength(3)
+          .setPlaceholder("0-100")
+          .setRequired(true)
+      ),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId("opponent_score")
+          .setLabel(`${game.opponent} Score`)
+          .setStyle(TextInputStyle.Short)
+          .setMinLength(1)
+          .setMaxLength(3)
+          .setPlaceholder("0-100")
+          .setRequired(true)
+      )
+    );
+  
+  await interaction.showModal(modal);
+}
+
+async function handleScoreModal(interaction: ModalSubmitInteraction) {
+  if (!interaction.guildId) return;
+  const gameId = interaction.customId.split(":")[1]!;
+  const game = schedule.games.find((g) => g.id === gameId);
+  
+  if (!game) return interaction.reply({ content: "Game not found.", flags: 64 });
+  
+  const michScore = parseInt(interaction.fields.getTextInputValue("michigan_score"));
+  const oppScore = parseInt(interaction.fields.getTextInputValue("opponent_score"));
+  
+  if (isNaN(michScore) || isNaN(oppScore) || michScore < 0 || oppScore < 0 || michScore > 100 || oppScore > 100) {
+    return interaction.reply({ content: "Please enter valid scores (0-100).", flags: 64 });
+  }
+  
+  await store.saveUserScore(interaction.guildId, schedule.season, interaction.user.id, gameId, { michScore, opponentScore: oppScore });
+  
+  const communityScores = store.communityScores(interaction.guildId, schedule.season, gameId);
   const avgMich = communityScores.length ? communityScores.reduce((sum, s) => sum + s.michScore, 0) / communityScores.length : 0;
   const avgOpp = communityScores.length ? communityScores.reduce((sum, s) => sum + s.opponentScore, 0) / communityScores.length : 0;
   
   const embed = new EmbedBuilder()
     .setColor(0xffcb05)
-    .setTitle("🏈 Your Score Prediction Saved")
-    .setDescription(`**${schedule.team} ${michScore} - ${opponentScore} Western Michigan**`)
+    .setTitle("🏈 Score Prediction Saved")
+    .setDescription(`**${schedule.team} ${michScore} - ${oppScore} ${game.opponent}**`)
     .addFields(
       { name: "Community Average", value: `**${avgMich.toFixed(1)} - ${avgOpp.toFixed(1)}**`, inline: true },
       { name: "Total Predictions", value: `**${communityScores.length}**`, inline: true }
     )
-    .setFooter({ text: `Week 1 • ${schedule.season}` });
+    .setFooter({ text: `${schedule.season}` });
+  
   return interaction.reply({ embeds: [embed], flags: 64 });
 }
 
 client.once(Events.ClientReady, (ready) => console.log(`Ready as ${ready.user.tag}`));
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
-    if (interaction.isButton() && interaction.customId.startsWith("pick:")) return await handlePick(interaction);
+    if (interaction.isButton()) {
+      if (interaction.customId.startsWith("pick:")) return await handlePick(interaction);
+      if (interaction.customId.startsWith("score:")) return await handleScoreSelect(interaction);
+    }
+    if (interaction.isModalSubmit() && interaction.customId.startsWith("score_modal:")) {
+      return await handleScoreModal(interaction);
+    }
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName === "predict") return await startPredict(interaction);
     if (interaction.commandName === "mypicks") return await myPicks(interaction);

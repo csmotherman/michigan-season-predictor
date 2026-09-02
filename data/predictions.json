@@ -89,5 +89,18 @@
       "pick": "L",
       "updatedAt": "2026-09-02T12:05:17.589Z"
     }
+  ],
+  "scores": [
+    {
+      "guildId": "1544673491666866206",
+      "season": 2026,
+      "userId": "625087824743628804",
+      "gameId": "wmich",
+      "prediction": {
+        "michScore": 27,
+        "opponentScore": 3
+      },
+      "updatedAt": "2026-09-02T13:50:48.111Z"
+    }
   ]
 }
